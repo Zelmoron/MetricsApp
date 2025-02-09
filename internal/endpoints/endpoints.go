@@ -29,7 +29,7 @@ func (e *Endpoints) Render(c echo.Context) error {
 func (e *Endpoints) GetData(c echo.Context) error {
 
 	formData := requests.FormData{}
-	if err := c.Bind(formData); err != nil {
+	if err := c.Bind(&formData); err != nil {
 		c.Logger().Errorf("Ошибка привязки данных: %v", err)
 		return c.JSON(http.StatusBadRequest, map[string]string{
 			"error": "Неверные данные формы",
