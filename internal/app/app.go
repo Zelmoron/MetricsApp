@@ -2,9 +2,9 @@ package app
 
 import (
 	"MetricsApp/internal/endpoints"
+	"MetricsApp/internal/services"
+	"MetricsApp/internal/utils"
 	"io"
-	"os/exec"
-	"runtime"
 	"text/template"
 
 	"github.com/labstack/echo/v4"
@@ -23,13 +23,17 @@ func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Con
 type App struct {
 	app       *echo.Echo
 	endpoints *endpoints.Endpoints
+	services  *services.Services
+	utils     *utils.Utils
 }
 
 func New() *App {
 
 	a := &App{}
 	a.app = echo.New()
-	a.endpoints = endpoints.New()
+	a.utils = utils.New()
+	a.services = services.New()
+	a.endpoints = endpoints.New(a.services)
 	a.controllers()
 
 	return a
@@ -44,33 +48,14 @@ func (a *App) controllers() {
 	a.app.Static("/static", "static")
 	a.app.Use(middleware.Logger(), middleware.Recover())
 	a.app.GET("/", a.endpoints.Render)
+	a.app.POST("/get-data", a.endpoints.GetData)
 }
 
 func (a *App) Run() {
 	url := "http://localhost:8080"
 
-	a.openBrowser(url)
+	a.utils.OpenBrowser(url)
 	log.Info().Msg("Приложение запущено")
 	a.app.Start(":8080")
 
-}
-
-func (a *App) openBrowser(url string) {
-	var err error
-
-	switch runtime.GOOS {
-	case "linux":
-		err = exec.Command("xdg-open", url).Start()
-	case "windows":
-		err = exec.Command("rundll32", "url.dll,FileProtocolHandler", url).Start()
-	case "darwin":
-		err = exec.Command("open", url).Start()
-	default:
-		log.Warn().Msg("Не удалось определить ОС для открытия браузера")
-		return
-	}
-
-	if err != nil {
-		log.Error().Err(err).Msg("Не удалось открыть браузер")
-	}
 }
