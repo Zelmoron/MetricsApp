@@ -5,11 +5,49 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Metrics</title>
-    <link href="/static/css/styles.css" rel="stylesheet" >
+    <link href="/static/css/styles.css" rel="stylesheet">
     <link rel="icon" href="/static/favicon.ico" type="image/x-icon">
 </head>
 <body>
-    Hello
+    <div class="form-container">
+        <form id="metrics-form">
+            <div class="form-group">
+                <label for="request-url">URL</label>
+                <input type="url" id="request-url" name="request-url" placeholder="Введите URL" required>
+            </div>
+        
+            <div class="form-group">
+                <label for="request-count">Кол-во запросов</label>
+                <div class="input-group">
+                    <input type="number" id="request-count" name="request-count" min="1" required>
+                    <input type="checkbox" id="parallel-checkbox" name="parallel-checkbox">
+                    <label for="parallel-checkbox">Параллельно</label>
+                </div>
+            </div>
+        
+            <div class="form-group">
+                <label for="request-type">Тип запроса</label>
+                <select id="request-type" name="request-type" required>
+                    <option value="GET">GET</option>
+                    <option value="POST">POST</option>
+                    <option value="PATCH">PATCH (PUT)</option>
+                    <option value="DELETE">DELETE</option>
+                </select>
+            </div>
+        
+            <div class="form-group hidden" id="json-field-group">
+                <label for="json-input">JSON</label>
+                <div class="input-group">
+                    <textarea id="json-input" name="json-input" rows="4" placeholder="Введите JSON"></textarea>
+                    <input type="checkbox" id="randomize-checkbox" name="randomize-checkbox">
+                    <label for="randomize-checkbox">Сделать рандомно</label>
+                </div>
+            </div>
+        
+            <button type="submit">Отправить</button>
+        </form>
+        
+    </div>
 
     <script src="/static/js/script.js"></script>
 </body>
