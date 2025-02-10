@@ -9,7 +9,7 @@ import (
 
 type (
 	Services interface {
-		GetData()
+		GetData(requests.FormData)
 	}
 	Endpoints struct {
 		services Services
@@ -37,10 +37,6 @@ func (e *Endpoints) GetData(c echo.Context) error {
 	}
 
 	c.Logger().Infof("Полученные данные: %+v", formData)
-
-	return c.JSON(http.StatusOK, map[string]interface{}{
-		"message": "Данные успешно получены",
-		"data":    formData,
-	})
-
+	e.services.GetData(formData)
+	return nil
 }
