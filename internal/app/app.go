@@ -1,6 +1,7 @@
 package app
 
 import (
+	applicationlogic "MetricsApp/internal/application_logic"
 	"MetricsApp/internal/endpoints"
 	"MetricsApp/internal/services"
 	"MetricsApp/internal/utils"
@@ -24,6 +25,7 @@ type App struct {
 	app       *echo.Echo
 	endpoints *endpoints.Endpoints
 	services  *services.Services
+	applogic  *applicationlogic.Applicationlogic
 	utils     *utils.Utils
 }
 
@@ -32,7 +34,8 @@ func New() *App {
 	a := &App{}
 	a.app = echo.New()
 	a.utils = utils.New()
-	a.services = services.New()
+	a.applogic = applicationlogic.New()
+	a.services = services.New(a.applogic)
 	a.endpoints = endpoints.New(a.services)
 	a.controllers()
 
