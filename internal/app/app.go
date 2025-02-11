@@ -46,9 +46,10 @@ func (a *App) controllers() {
 	a.app.Renderer = t
 	a.app.Debug = true
 	a.app.Static("/static", "static")
-	a.app.Use(middleware.Logger(), middleware.Recover())
+	a.app.Use(middleware.Recover())
 	a.app.GET("/", a.endpoints.Render)
 	a.app.POST("/get-data", a.endpoints.GetData)
+	a.app.POST("/post", a.endpoints.ParallelPost)
 }
 
 func (a *App) Run() {
