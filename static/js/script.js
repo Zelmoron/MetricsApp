@@ -57,4 +57,8 @@ document.getElementById('json-input').addEventListener('input', function(event) 
         this.value = text.slice(0, cursorPosition) + '}' + text.slice(cursorPosition);
         this.setSelectionRange(cursorPosition, cursorPosition); 
     }
+    if (text[cursorPosition - 1] === '"') {
+        this.value = text.slice(0, cursorPosition) + '"' + text.slice(cursorPosition);
+        this.setSelectionRange(cursorPosition, cursorPosition); 
+    }
 });
