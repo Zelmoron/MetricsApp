@@ -1,3 +1,4 @@
+
 document.addEventListener('DOMContentLoaded', () => {
     const requestType = document.getElementById('request-type');
     const jsonFieldGroup = document.getElementById('json-field-group');
@@ -38,4 +39,22 @@ document.getElementById("metrics-form").addEventListener("submit", async functio
     const result = await response.json();
     console.log(result);
     alert(result.message || "Данные отправлены успешно!");
+});
+
+
+
+document.getElementById('request-url').addEventListener('focus', function() {
+    if (!this.value) {
+        this.value = 'http://';
+    }
+});
+
+document.getElementById('json-input').addEventListener('input', function(event) {
+    const text = this.value;
+    const cursorPosition = this.selectionStart;
+
+    if (text[cursorPosition - 1] === '{') {
+        this.value = text.slice(0, cursorPosition) + '}' + text.slice(cursorPosition);
+        this.setSelectionRange(cursorPosition, cursorPosition); 
+    }
 });
