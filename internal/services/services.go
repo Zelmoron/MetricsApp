@@ -2,12 +2,13 @@ package services
 
 import (
 	"MetricsApp/internal/requests"
+	"fmt"
 )
 
 type (
 	Applicationlogic interface {
 		ParallelGet(string, int)
-		ParallelPost(string, int, string)
+		ParallelPost(string, int, string) chan int
 	}
 	Services struct {
 		applogic Applicationlogic
@@ -25,9 +26,11 @@ func (s *Services) GetData(formData requests.FormData) {
 	switch formData.Parallel {
 	case true:
 		if formData.RequestType == "GET" {
-			s.applogic.ParallelGet(formData.URL, formData.RequestCount)
+			go s.applogic.ParallelGet(formData.URL, formData.RequestCount)
+
 		} else if formData.RequestType == "POST" {
-			s.applogic.ParallelPost(formData.URL, formData.RequestCount, formData.JSONData)
+			results := <-s.applogic.ParallelPost(formData.URL, formData.RequestCount, formData.JSONData)
+			fmt.Println("Результат", results)
 		}
 	case false:
 

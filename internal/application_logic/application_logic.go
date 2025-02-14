@@ -41,36 +41,50 @@ func (a *Applicationlogic) ParallelGet(reqUrl string, reqCount int) {
 	wg.Wait()
 }
 
-func (a *Applicationlogic) ParallelPost(reqUrl string, reqCount int, reqJSON string) {
+func (a *Applicationlogic) ParallelPost(reqUrl string, reqCount int, reqJSON string) (ch chan int) {
+	ch = make(chan int)
 	url := reqUrl
 	requestsCount := reqCount
-
+	timeResult := make(chan int)
 	log.Info().Msgf("%s,%d,%d", reqJSON, requestsCount, reqCount)
 	wg := sync.WaitGroup{}
-	for i := 0; i < requestsCount; i++ {
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
+	go func() {
+		for i := 0; i < requestsCount; i++ {
+			wg.Add(1)
+			go func() {
+				defer wg.Done()
 
-			// Отправляем POST-запрос
-			resp, err := http.Post(url, "application/json", bytes.NewBuffer([]byte(reqJSON)))
-			startTime := time.Now()
-			if err != nil {
-				fmt.Printf("Ошибка при запросе: %v\n", err)
-				return
-			}
-			defer resp.Body.Close()
-			responseTime := time.Since(startTime)
+				resp, err := http.Post(url, "application/json", bytes.NewBuffer([]byte(reqJSON)))
+				startTime := time.Now()
+				if err != nil {
+					fmt.Printf("Ошибка при запросе: %v\n", err)
+					return
+				}
+				defer resp.Body.Close()
+				responseTime := time.Since(startTime)
 
-			// Выводим статус ответа
-			fmt.Printf("Запрос с %s завершен, статус: %s, время отклика: %v\n", url, resp.Status, responseTime)
+				fmt.Printf("Запрос с %s завершен, статус: %s, время отклика: %v\n", url, resp.Status, responseTime)
+				timeResult <- int(responseTime)
 
-		}()
-	}
+			}()
+		}
+		wg.Wait()
+		close(timeResult)
+
+	}()
+
+	go func() {
+		sum := 0
+		for v := range timeResult {
+			sum += v
+		}
+		fmt.Println(sum, "Сумма времени")
+		ch <- 1
+
+	}()
+
+	return
 }
-
-// 	// wg.Wait()
-// }
 
 // func (s *Services) parallelPatch() {
 // 	url := reqUrl
